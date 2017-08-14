@@ -25,24 +25,24 @@ func Test(t *testing.T) {
 
 		ips, err := net.LookupIP(domain)
 		if err != nil {
-			t.Fatalf("Could not resolve IP addresses for %s: %s", domain, err)
-		}
+			t.Errorf("Could not resolve IP addresses for %s: %s", domain, err)
+		} else {
+			for _, ip := range ips {
+				t.Run(domain+"--"+ip.String(), func(t *testing.T) {
+					t.Parallel()
 
-		for _, ip := range ips {
-			t.Run(domain+"--"+ip.String(), func(t *testing.T) {
-				t.Parallel()
-
-				if response, err := ping(ip, domain); err != nil {
-					t.Error(err)
-				} else {
-					cleanup(response)
-				}
-			})
+					if response, err := ping(ip.String(), domain); err != nil {
+						t.Error(err)
+					} else {
+						cleanup(response)
+					}
+				})
+			}
 		}
 	}
 }
-func ping(ip net.IP, domain string) (*http.Response, error) {
-	return buildClient(ip.String(), domain).Get("https://" + domain)
+func ping(ip string, domain string) (*http.Response, error) {
+	return buildClient(ip, domain).Get("https://" + domain)
 }
 
 func buildClient(ip, domain string) *http.Client {
