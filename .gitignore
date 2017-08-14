@@ -1,3 +1,4 @@
 .idea
+bin*
 smartyping.test
 smartyping.test.exe
