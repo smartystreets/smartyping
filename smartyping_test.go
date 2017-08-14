@@ -13,15 +13,16 @@ func Test(t *testing.T) {
 	t.Parallel()
 
 	domains := []string{
-		"international-street.api.smartystreets.com",
-		"us-street.api.smartystreets.com",
-		"us-zipcode.api.smartystreets.com",
-		"us-extract.api.smartystreets.com",
-		"us-autocomplete.api.smartystreets.com",
-		"download.api.smartystreets.com",
+		"international-street",
+		"us-street",
+		"us-zipcode",
+		"us-extract",
+		"us-autocomplete",
+		"download",
 	}
 
 	for _, domain := range domains {
+		domain += ".api.smartystreets.com"
 
 		ips, err := net.LookupIP(domain)
 		if err != nil {
