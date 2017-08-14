@@ -10,8 +10,6 @@ import (
 )
 
 func Test(t *testing.T) {
-	t.Parallel()
-
 	domains := []string{
 		"international-street",
 		"us-street",
@@ -23,23 +21,25 @@ func Test(t *testing.T) {
 
 	for _, domain := range domains {
 		domain += ".api.smartystreets.com"
+		t.Run(domain, func(t *testing.T) {
 
-		ips, err := net.LookupIP(domain)
-		if err != nil {
-			t.Errorf("Could not resolve IP addresses for %s: %s", domain, err)
-		} else {
-			for _, ip := range ips {
-				t.Run(domain+"--"+ip.String(), func(t *testing.T) {
-					t.Parallel()
+			ips, err := net.LookupIP(domain)
+			if err != nil {
+				t.Errorf("Could not resolve IP addresses for %s: %s", domain, err)
+			} else {
+				for _, ip := range ips {
+					t.Run(ip.String(), func(t *testing.T) {
+						t.Parallel()
 
-					if response, err := ping(ip.String(), domain); err != nil {
-						t.Error(err)
-					} else {
-						cleanup(response)
-					}
-				})
+						if response, err := ping(ip.String(), domain); err != nil {
+							t.Error(err)
+						} else {
+							cleanup(response)
+						}
+					})
+				}
 			}
-		}
+		})
 	}
 }
 func ping(ip string, domain string) (*http.Response, error) {
